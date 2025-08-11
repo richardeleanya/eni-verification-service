@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 export type AuthUser = {
   id: number;
   username: string;
+  roles: string[];
   // Add more fields as needed
 };
 
@@ -41,10 +42,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     if (!res.ok) throw new Error('Invalid credentials');
     const data = await res.json();
+    // Ensure roles is an array (API should provide it)
+    const userWithRoles = {
+      ...data.user,
+      roles: Array.isArray(data.user.roles) ? data.user.roles : [],
+    };
     setToken(data.token);
-    setUser(data.user);
+    setUser(userWithRoles);
     localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('user', JSON.stringify(userWithRoles));
   };
 
   const logout = () => {

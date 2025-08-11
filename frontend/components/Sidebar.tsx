@@ -3,6 +3,7 @@ import { Box, Flex, IconButton, VStack, Text, Collapse, useBreakpointValue } fro
 import { HamburgerIcon, ChevronLeftIcon } from '@chakra-ui/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useAuth } from '../context/AuthContext';
 
 const agencyGroups = [
   { title: 'Home Office', key: 'home-office', path: '/home-office' },
@@ -19,10 +20,45 @@ const agencyGroups = [
   { title: 'Insurance Companies', key: 'insurance', path: '/insurance' },
 ];
 
+// Map roles to sidebar keys they can see
+const roleToKeys: Record<string, string[]> = {
+  ROLE_ADMIN: agencyGroups.map((g) => g.key),
+  ROLE_EMPLOYER: ['employers'],
+  ROLE_POLICE: ['police'],
+  ROLE_HMRC: ['hmrc'],
+  ROLE_DWP: ['dwp'],
+  ROLE_NHS: ['nhs'],
+  ROLE_LOCAL: ['local-authorities'],
+  ROLE_FINANCE: ['financial-services'],
+  ROLE_HOUSING: ['housing-rental'],
+  ROLE_EDUCATION: ['education'],
+  ROLE_RETAIL: ['retail'],
+  ROLE_INSURANCE: ['insurance'],
+};
+
 export const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const router = useRouter();
+  const { user } = useAuth();
+
+  let allowedKeys: string[] = [];
+  if (user?.roles) {
+    if (user.roles.includes('ROLE_ADMIN')) {
+      allowedKeys = agencyGroups.map((g) => g.key);
+    } else {
+      user.roles.forEach((role) => {
+        if (roleToKeys[role]) {
+          allowedKeys.push(...roleToKeys[role]);
+        }
+      });
+    }
+    allowedKeys = Array.from(new Set(allowedKeys));
+  }
+
+  const visibleGroups = user
+    ? agencyGroups.filter((group) => allowedKeys.includes(group.key))
+    : [];
 
   return (
     <Box
@@ -53,7 +89,7 @@ export const Sidebar: React.FC = () => {
         />
       </Flex>
       <VStack align="stretch" spacing={1} mt={2} px={2}>
-        {agencyGroups.map((group) => (
+        {visibleGroups.map((group) => (
           <Collapse in={!collapsed} unmountOnExit key={group.key}>
             <Link href={group.path} passHref legacyBehavior>
               <Flex
