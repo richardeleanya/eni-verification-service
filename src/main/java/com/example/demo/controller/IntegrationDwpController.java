@@ -1,40 +1,31 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.DwpApplication;
+import com.example.demo.service.DwpApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dwp")
-@Tag(name = "DWP", description = "DWP application endpoints (stub)")
+@Tag(name = "DWP", description = "DWP application endpoints")
 public class IntegrationDwpController {
 
+    @Autowired
+    private DwpApplicationService dwpApplicationService;
+
     @GetMapping
-    @Operation(summary = "List DWP applications (stub data)")
-    public List<Map<String, Object>> list() {
-        List<Map<String, Object>> result = new ArrayList<>();
-        result.add(stubApp(1L));
-        result.add(stubApp(2L));
-        return result;
+    @Operation(summary = "List DWP applications (real data)")
+    public List<DwpApplication> list() {
+        return dwpApplicationService.getAll();
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get DWP application by id (stub)")
-    public Map<String, Object> get(@PathVariable Long id) {
-        return stubApp(id);
-    }
-
-    private Map<String, Object> stubApp(Long id) {
-        return Map.of(
-                "id", id,
-                "applicationId", "APP-" + String.format("%05d", id),
-                "status", id % 2 == 0 ? "Closed" : "Active",
-                "date", Instant.now().minusSeconds(id * 86400).toString()
-        );
+    @Operation(summary = "Get DWP application by id (real data)")
+    public DwpApplication get(@PathVariable Long id) {
+        return dwpApplicationService.getById(id);
     }
 }

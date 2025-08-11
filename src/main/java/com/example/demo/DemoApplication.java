@@ -48,6 +48,22 @@ public class DemoApplication {
                 h2.setDate(Instant.now().minusSeconds(604800));
                 hmrcCaseRepository.save(h2);
             }
+
+            org.springframework.context.ApplicationContext ctx = org.springframework.boot.SpringApplication.run(com.example.demo.DemoApplication.class, args);
+            com.example.demo.repository.DwpApplicationRepository dwpRepo = ctx.getBean(com.example.demo.repository.DwpApplicationRepository.class);
+            if (dwpRepo.count() == 0) {
+                com.example.demo.model.DwpApplication d1 = new com.example.demo.model.DwpApplication();
+                d1.setApplicationId("APP-3001");
+                d1.setStatus("Active");
+                d1.setDate(Instant.now().minusSeconds(345600));
+                dwpRepo.save(d1);
+
+                com.example.demo.model.DwpApplication d2 = new com.example.demo.model.DwpApplication();
+                d2.setApplicationId("APP-3002");
+                d2.setStatus("Closed");
+                d2.setDate(Instant.now().minusSeconds(864000));
+                dwpRepo.save(d2);
+            }
         };
     }
 }
