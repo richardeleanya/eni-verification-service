@@ -28,7 +28,12 @@ const statusColor = (status: string) =>
     ? 'red'
     : 'gray';
 
-const ApplicationTable: React.FC = () => {
+type ApplicationTableProps = {
+  onSelect?: (id: number) => void;
+  selectedId?: number | null;
+};
+
+const ApplicationTable: React.FC<ApplicationTableProps> = ({ onSelect, selectedId }) => {
   const [data, setData] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +68,12 @@ const ApplicationTable: React.FC = () => {
             </Tr>
           ) : (
             data.map((row) => (
-              <Tr key={row.id}>
+              <Tr
+                key={row.id}
+                _hover={{ bg: 'gray.50', cursor: onSelect ? 'pointer' : undefined }}
+                bg={selectedId === row.id ? 'blue.50' : undefined}
+                onClick={onSelect ? () => onSelect(row.id) : undefined}
+              >
                 <Td>{row.id}</Td>
                 <Td>{row.applicantName}</Td>
                 <Td>
