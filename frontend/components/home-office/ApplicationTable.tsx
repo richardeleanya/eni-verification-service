@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Table,
@@ -8,28 +8,16 @@ import {
   Th,
   Td,
   Badge,
+  Spinner,
+  Text,
 } from '@chakra-ui/react';
 
-const stubData = [
-  {
-    id: 'APP-1001',
-    name: 'Aliya Khan',
-    status: 'Pending',
-    submittedAt: '2025-08-10T10:24:00Z',
-  },
-  {
-    id: 'APP-1002',
-    name: 'John Doe',
-    status: 'Approved',
-    submittedAt: '2025-07-08T15:00:00Z',
-  },
-  {
-    id: 'APP-1003',
-    name: 'Maria Silva',
-    status: 'Rejected',
-    submittedAt: '2025-06-12T09:30:00Z',
-  },
-];
+type Application = {
+  id: number;
+  applicantName: string;
+  status: string;
+  submittedAt: string;
+};
 
 const statusColor = (status: string) =>
   status === 'Approved'
@@ -40,35 +28,61 @@ const statusColor = (status: string) =>
     ? 'red'
     : 'gray';
 
-const ApplicationTable: React.FC = () => (
-  <Box bg="white" borderRadius="md" boxShadow="sm" p={4}>
-    <Table size="sm">
-      <Thead>
-        <Tr>
-          <Th>Application ID</Th>
-          <Th>Applicant Name</Th>
-          <Th>Status</Th>
-          <Th>Submitted At</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {stubData.map((row) => (
-          <Tr key={row.id}>
-            <Td>{row.id}</Td>
-            <Td>{row.name}</Td>
-            <Td>
-              <Badge colorScheme={statusColor(row.status)}>{row.status}</Badge>
-            </Td>
-            <Td>
-              {new Date(row.submittedAt).toLocaleDateString() +
-                ' ' +
-                new Date(row.submittedAt).toLocaleTimeString()}
-            </Td>
+const ApplicationTable: React.FC = () => {
+  const [data, setData] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/home-office/applications')
+      .then((res) => res.json())
+      .then((rows) => setData(rows))
+      .catch(() => setData([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <Box bg="white" borderRadius="md" boxShadow="sm" p={4}>
+      <Table size="sm">
+        <Thead>
+          <Tr>
+            <Th>Application ID</Th>
+            <Th>Applicant Name</Th>
+            <Th>Status</Th>
+            <Th>Submitted At</Th>
           </Tr>
-        ))}
-      </Tbody>
-    </Table>
-  </Box>
-);
+        </Thead>
+        <Tbody>
+          {loading ? (
+            <Tr>
+              <Td colSpan={4}><Spinner size="sm" /></Td>
+            </Tr>
+          ) : data.length === 0 ? (
+            <Tr>
+              <Td colSpan={4}><Text color="gray.500">No applications found.</Text></Td>
+            </Tr>
+          ) : (
+            data.map((row) => (
+              <Tr key={row.id}>
+                <Td>{row.id}</Td>
+                <Td>{row.applicantName}</Td>
+                <Td>
+                  <Badge colorScheme={statusColor(row.status)}>{row.status}</Badge>
+                </Td>
+                <Td>
+                  {row.submittedAt
+                    ? new Date(row.submittedAt).toLocaleDateString() +
+                      ' ' +
+                      new Date(row.submittedAt).toLocaleTimeString()
+                    : '-'}
+                </Td>
+              </Tr>
+            ))
+          )}
+        </Tbody>
+      </Table>
+    </Box>
+  );
+};
 
 export default ApplicationTable;
