@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
 import { Box, Flex, IconButton, VStack, Text, Collapse, useBreakpointValue } from '@chakra-ui/react';
 import { HamburgerIcon, ChevronLeftIcon } from '@chakra-ui/icons';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const agencyGroups = [
-  { title: 'Home Office', key: 'home-office' },
-  { title: 'Police', key: 'police' },
-  { title: 'HMRC', key: 'hmrc' },
-  { title: 'DWP', key: 'dwp' },
-  { title: 'NHS', key: 'nhs' },
-  { title: 'Local Authorities', key: 'local-authorities' },
-  { title: 'Employers', key: 'employers' },
-  { title: 'Financial Services', key: 'financial-services' },
-  { title: 'Housing & Rental', key: 'housing-rental' },
-  { title: 'Education Sector', key: 'education' },
-  { title: 'Retail & E-Commerce', key: 'retail' },
-  { title: 'Insurance Companies', key: 'insurance' },
+  { title: 'Home Office', key: 'home-office', path: '/home-office' },
+  { title: 'Police', key: 'police', path: '/police' },
+  { title: 'HMRC', key: 'hmrc', path: '/hmrc' },
+  { title: 'DWP', key: 'dwp', path: '/dwp' },
+  { title: 'NHS', key: 'nhs', path: '/nhs' },
+  { title: 'Local Authorities', key: 'local-authorities', path: '/local-authorities' },
+  { title: 'Employers', key: 'employers', path: '/employers' },
+  { title: 'Financial Services', key: 'financial-services', path: '/financial-services' },
+  { title: 'Housing & Rental', key: 'housing-rental', path: '/housing-rental' },
+  { title: 'Education Sector', key: 'education', path: '/education' },
+  { title: 'Retail & E-Commerce', key: 'retail', path: '/retail' },
+  { title: 'Insurance Companies', key: 'insurance', path: '/insurance' },
 ];
 
 export const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const router = useRouter();
 
   return (
     <Box
@@ -52,17 +55,21 @@ export const Sidebar: React.FC = () => {
       <VStack align="stretch" spacing={1} mt={2} px={2}>
         {agencyGroups.map((group) => (
           <Collapse in={!collapsed} unmountOnExit key={group.key}>
-            <Flex
-              align="center"
-              px={3}
-              py={2}
-              borderRadius="md"
-              _hover={{ bg: 'brand.800', cursor: 'pointer' }}
-              fontSize="md"
-              fontWeight="medium"
-            >
-              {group.title}
-            </Flex>
+            <Link href={group.path} passHref legacyBehavior>
+              <Flex
+                align="center"
+                px={3}
+                py={2}
+                borderRadius="md"
+                as="a"
+                bg={router.pathname.startsWith(group.path) ? 'brand.800' : undefined}
+                _hover={{ bg: 'brand.800', cursor: 'pointer' }}
+                fontSize="md"
+                fontWeight="medium"
+              >
+                {group.title}
+              </Flex>
+            </Link>
           </Collapse>
         ))}
       </VStack>
