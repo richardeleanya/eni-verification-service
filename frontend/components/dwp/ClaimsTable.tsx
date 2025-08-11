@@ -10,6 +10,10 @@ import {
   Badge,
   Spinner,
   Text,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  useToast,
 } from '@chakra-ui/react';
 
 type Claim = {
@@ -34,6 +38,7 @@ type ClaimsTableProps = {
 const ClaimsTable: React.FC<ClaimsTableProps> = ({ onSelect, selectedId }) => {
   const [data, setData] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     setLoading(true);
@@ -43,6 +48,44 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ({ onSelect, selectedId }) => {
       .catch(() => setData([]))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleStatusChange = async (id: number, nextStatus: string) => {
+    const prev = data.find((row) => row.id === id)?.status;
+    if (!nextStatus || nextStatus === prev) return;
+    // Optimistic UI update
+    setData((cur) =>
+      cur.map((row) =>
+        row.id === id ? { ...row, status: nextStatus } : row
+      )
+    );
+    try {
+      const res = await fetch(`/api/dwp/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      if (!res.ok) throw new Error();
+      toast({
+        title: 'Status updated.',
+        status: 'success',
+        duration: 1500,
+        isClosable: true,
+      });
+    } catch {
+      // Rollback UI
+      setData((cur) =>
+        cur.map((row) =>
+          row.id === id ? { ...row, status: prev ?? row.status } : row
+        )
+      );
+      toast({
+        title: 'Failed to update status.',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box bg="white" borderRadius="md" boxShadow="sm" p={4}>
@@ -72,8 +115,19 @@ const ClaimsTable: React.FC<ClaimsTableProps> = ({ onSelect, selectedId }) => {
                 onClick={onSelect ? () => onSelect(row.id) : undefined}
               >
                 <Td>{row.applicationId}</Td>
-                <Td>
-                  <Badge colorScheme={statusColor(row.status)}>{row.status}</Badge>
+                <Td onClick={e => e.stopPropagation()}>
+                  <Editable
+                    defaultValue={row.status}
+                    fontWeight="bold"
+                    onSubmit={nextStatus => handleStatusChange(row.id, nextStatus)}
+                  >
+                    <EditablePreview
+                      as={Badge}
+                      colorScheme={statusColor(row.status)}
+                      cursor="pointer"
+                    />
+                    <EditableInput />
+                  </Editable>
                 </Td>
                 <Td>
                   {row.date
