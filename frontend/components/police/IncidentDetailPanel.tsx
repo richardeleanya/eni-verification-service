@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Text, Heading } from '@chakra-ui/react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 type IncidentDetailPanelProps = {
   incidentId: number | null;
@@ -15,15 +16,27 @@ const IncidentDetailPanel: React.FC<IncidentDetailPanelProps> = ({ incidentId })
     ) : (
       <>
         <Box
-          bg="gray.100"
           borderRadius="md"
           h="160px"
           mb={3}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
+          overflow="hidden"
         >
-          <Text color="gray.500">[Map placeholder]</Text>
+          <MapContainer
+            center={[51.505, -0.09]}
+            zoom={5}
+            style={{ width: '100%', height: '100%' }}
+            scrollWheelZoom={false}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={[51.5, -0.09]}>
+              <Popup>
+                Incident ID: <b>{incidentId}</b>
+              </Popup>
+            </Marker>
+          </MapContainer>
         </Box>
         <Text color="gray.600">
           Details for incident ID <b>{incidentId}</b> would appear here.
