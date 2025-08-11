@@ -79,6 +79,21 @@ public class DemoApplication {
                 n2.setDate(Instant.now().minusSeconds(604800));
                 nhsRepo.save(n2);
             }
+
+            com.example.demo.repository.LocalAuthorityRecordRepository localRepo = ctx.getBean(com.example.demo.repository.LocalAuthorityRecordRepository.class);
+            if (localRepo.count() == 0) {
+                com.example.demo.model.LocalAuthorityRecord r1 = new com.example.demo.model.LocalAuthorityRecord();
+                r1.setApplicationId("REC-5001");
+                r1.setStatus("Active");
+                r1.setDate(Instant.now().minusSeconds(345600));
+                localRepo.save(r1);
+
+                com.example.demo.model.LocalAuthorityRecord r2 = new com.example.demo.model.LocalAuthorityRecord();
+                r2.setApplicationId("REC-5002");
+                r2.setStatus("Closed");
+                r2.setDate(Instant.now().minusSeconds(864000));
+                localRepo.save(r2);
+            }
         };
     }
 }
