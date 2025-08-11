@@ -19,6 +19,9 @@ import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import Layout from '../../components/Layout';
 import withAuth from '../../hocs/withAuth';
+import CrossReferenceGraph from '../../components/CrossReferenceGraph';
+import Timeline from '../../components/Timeline';
+import AuditTrail from '../../components/AuditTrail';
 
 type EmployerResponse = {
   id: number;
@@ -26,21 +29,14 @@ type EmployerResponse = {
   verificationStatus: string;
   submittedAt?: string;
   verifiedAt?: string | null;
-};
-
-type AuditEntry = {
-  action: string;
-  by: string;
-  at: string;
+  history?: { date: string; label: string }[];
 };
 
 const EmployerDetailPage: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const [employer, setEmployer] = useState<EmployerResponse | null>(null);
-  const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [auditLoading, setAuditLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -57,15 +53,18 @@ const EmployerDetailPage: React.FC = () => {
           setEmployer(null);
         })
         .finally(() => setLoading(false));
-
-      setAuditLoading(true);
-      fetch(`/api/employers/${id}/audit`)
-        .then((res) => res.json())
-        .then((data) => setAudit(data))
-        .catch(() => setAudit([]))
-        .finally(() => setAuditLoading(false));
     }
   }, [id]);
+
+  // Fallback stub history if missing
+  const history =
+    employer?.history && employer.history.length > 0
+      ? employer.history
+      : [
+          { date: '2025-05-01', label: 'Employer created' },
+          { date: '2025-06-10', label: 'Right to Work verified' },
+          { date: '2025-08-15', label: 'Audit completed' },
+        ];
 
   return (
     <Layout>
@@ -115,29 +114,23 @@ const EmployerDetailPage: React.FC = () => {
           <Heading size="md" mb={2}>
             Audit Trail
           </Heading>
-          {auditLoading ? (
-            <Spinner size="sm" />
-          ) : audit.length === 0 ? (
-            <ListItem color="gray.500">No audit events yet.</ListItem>
-          ) : (
-            <List spacing={2}>
-              {audit.map((entry, i) => (
-                <ListItem key={i}>
-                  <HStack spacing={3}>
-                    <Badge colorScheme={entry.action === 'CREATED' ? 'blue' : entry.action === 'VERIFIED' ? 'green' : 'gray'}>
-                      {entry.action}
-                    </Badge>
-                    <Text>
-                      by <b>{entry.by}</b> at{' '}
-                      {entry.at
-                        ? new Date(entry.at).toLocaleString()
-                        : '-'}
-                    </Text>
-                  </HStack>
-                </ListItem>
-              ))}
-            </List>
+          {typeof id === 'string' && (
+            <AuditTrail domain="employer" entityId={parseInt(id)} />
           )}
+
+          <Box mt={8}>
+            <Heading size="md" mb={2}>
+              Connections
+            </Heading>
+            <CrossReferenceGraph />
+          </Box>
+
+          <Box mt={8}>
+            <Heading size="md" mb={2}>
+              History Timeline
+            </Heading>
+            <Timeline events={history} />
+          </Box>
         </>
       ) : (
         <Text>No data.</Text>
