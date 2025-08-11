@@ -1,6 +1,22 @@
 import React from 'react';
-import { Box, Grid, GridItem, Heading, SimpleGrid, Text, Card, CardBody, Table, Thead, Tbody, Tr, Th, Td, Skeleton } from '@chakra-ui/react';
+import {
+  Box,
+  Grid,
+  GridItem,
+  Heading,
+  SimpleGrid,
+  Text,
+  Card,
+  CardBody,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+} from '@chakra-ui/react';
 import Layout from '../../components/Layout';
+import { MapContainer, TileLayer } from 'react-leaflet';
 
 const kpis = [
   { title: 'Overstayer Alerts', value: 12, color: 'accent.red' },
@@ -76,9 +92,21 @@ const HomeOfficeDashboard = () => (
       <GridItem>
         <Box bg="white" boxShadow="sm" borderRadius="md" p={4} h="100%">
           <Text fontWeight="bold" fontSize="md" mb={3}>
-            Entry/Exit Map (Placeholder)
+            Entry/Exit Map
           </Text>
-          <Skeleton h="180px" borderRadius="md" />
+          <Box w="100%" h="180px" borderRadius="md" overflow="hidden">
+            <MapContainer
+              center={[51.505, -0.09]}
+              zoom={5}
+              style={{ width: '100%', height: '100%' }}
+              scrollWheelZoom={false}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            </MapContainer>
+          </Box>
         </Box>
       </GridItem>
     </Grid>
