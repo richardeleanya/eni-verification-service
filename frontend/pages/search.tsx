@@ -24,14 +24,16 @@ type SearchResult = {
 };
 
 const getDetailLink = (result: SearchResult) => {
+  // All types except 'employer' are singular in URL except 'local-authorities', 'financial-services', 'housing-rental'
+  // We'll map type to URL as /<type>/<id>
   switch (result.type) {
     case 'employer':
       return `/employers/${result.id}`;
     case 'user':
       return `/users/${result.id}`;
-    // Add more cases as needed
+    // For consistency, support all domain types using /<type>/<id>
     default:
-      return '/';
+      return `/${result.type}/${result.id}`;
   }
 };
 
