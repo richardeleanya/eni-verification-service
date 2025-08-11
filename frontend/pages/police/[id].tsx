@@ -10,13 +10,12 @@ import {
   Td,
   Link as ChakraLink,
   Divider,
-  List,
-  ListItem,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import Layout from '../../components/Layout';
 import withAuth from '../../hocs/withAuth';
+import AuditTrail from '../../components/AuditTrail';
 
 type PoliceRecordResponse = {
   id: number;
@@ -24,12 +23,19 @@ type PoliceRecordResponse = {
   status: string;
   reportedAt?: string;
 };
+type AuditEntry = {
+  action: string;
+  by: string;
+  at: string;
+};
 
 const PoliceRecordDetailPage: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const [record, setRecord] = useState<PoliceRecordResponse | null>(null);
+  const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [auditLoading, setAuditLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -46,6 +52,13 @@ const PoliceRecordDetailPage: React.FC = () => {
           setRecord(null);
         })
         .finally(() => setLoading(false));
+
+      setAuditLoading(true);
+      fetch(`/api/police/${id}/audit`)
+        .then((res) => res.json())
+        .then((data) => setAudit(data))
+        .catch(() => setAudit([]))
+        .finally(() => setAuditLoading(false));
     }
   }, [id]);
 
@@ -89,10 +102,7 @@ const PoliceRecordDetailPage: React.FC = () => {
           <Heading size="md" mb={2}>
             Audit Trail
           </Heading>
-          <List spacing={2}>
-            {/* Replace with actual audit entries if available */}
-            <ListItem color="gray.500">No audit events yet.</ListItem>
-          </List>
+          <AuditTrail entries={audit} loading={auditLoading} />
         </>
       ) : (
         <Text>No data.</Text>

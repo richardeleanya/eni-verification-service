@@ -30,6 +30,16 @@ public class IntegrationPoliceController {
         return sampleRecord(id);
     }
 
+    @GetMapping("/{id}/audit")
+    @Operation(summary = "Get police record audit trail (stub)")
+    public List<Map<String, Object>> getAudit(@PathVariable Long id) {
+        Instant now = Instant.now();
+        List<Map<String, Object>> audit = new ArrayList<>();
+        audit.add(Map.of("action", "CREATED", "by", "officer", "at", now));
+        audit.add(Map.of("action", "REVIEWED", "by", "sergeant", "at", now.plusSeconds(3600)));
+        return audit;
+    }
+
     private PoliceRecordResponse sampleRecord(Long id) {
         PoliceRecordResponse resp = new PoliceRecordResponse();
         resp.setId(id);
