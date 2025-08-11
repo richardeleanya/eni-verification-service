@@ -1,0 +1,36 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.STAGING_SSH_KEY }}
+
+      - name: Add known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.STAGING_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Rsync docker-compose.yml to server
+        run: |
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}:/home/${{ secrets.STAGING_USER }}/docker-compose.yml
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/eni-backend:staging &&
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/eni-frontend:staging &&
+            docker-compose -f /home/${{ secrets.STAGING_USER }}/docker-compose.yml up -d
+          "
