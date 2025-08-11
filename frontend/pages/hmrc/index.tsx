@@ -14,14 +14,31 @@ import {
   Tr,
   Th,
   Td,
-  Skeleton,
 } from '@chakra-ui/react';
 import Layout from '../../components/Layout';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts';
 
 const kpis = [
   { title: 'Tax Evasion Flags', value: 0, color: 'accent.red' },
   { title: 'Business Compliance Checks', value: 0, color: 'accent.green' },
   { title: 'Self-Assessment Deadlines', value: 0, color: 'accent.green' },
+];
+
+const data = [
+  { month: 'Jan', collected: 400 },
+  { month: 'Feb', collected: 380 },
+  { month: 'Mar', collected: 420 },
+  { month: 'Apr', collected: 390 },
+  { month: 'May', collected: 440 },
+  { month: 'Jun', collected: 410 },
 ];
 
 const HMRCDashboard = () => (
@@ -60,7 +77,10 @@ const HMRCDashboard = () => (
             <Tbody>
               <Tr>
                 <Td colSpan={3}>
-                  <Skeleton height="20px" />
+                  {/* Replace with real data */}
+                  <Text color="gray.400" align="center">
+                    No recent cases.
+                  </Text>
                 </Td>
               </Tr>
             </Tbody>
@@ -70,9 +90,19 @@ const HMRCDashboard = () => (
       <GridItem>
         <Box bg="white" boxShadow="sm" borderRadius="md" p={4} h="100%">
           <Text fontWeight="bold" fontSize="md" mb={3}>
-            Tax Collection Chart (Placeholder)
+            Tax Collection Chart
           </Text>
-          <Skeleton h="180px" borderRadius="md" />
+          <Box w="100%" h="180px">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="collected" fill="#3182ce" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Box>
         </Box>
       </GridItem>
     </Grid>
