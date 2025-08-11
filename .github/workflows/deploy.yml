@@ -1,0 +1,25 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Pull Docker images from Docker Hub
+        run: |
+          echo "Pulling backend and frontend images..."
+          # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/eni-backend:staging
+          # docker pull ${{ secrets.DOCKERHUB_USERNAME }}/eni-frontend:staging
+
+      - name: Deploy to staging (placeholder)
+        run: |
+          echo "Deploying to staging environment..."
+          # Add SSH/Kubernetes deployment scripts here
