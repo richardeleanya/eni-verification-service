@@ -94,6 +94,21 @@ public class DemoApplication {
                 r2.setDate(Instant.now().minusSeconds(864000));
                 localRepo.save(r2);
             }
+
+            com.example.demo.repository.FinancialTransactionRepository finRepo = ctx.getBean(com.example.demo.repository.FinancialTransactionRepository.class);
+            if (finRepo.count() == 0) {
+                com.example.demo.model.FinancialTransaction t1 = new com.example.demo.model.FinancialTransaction();
+                t1.setTransactionId("TXN-6001");
+                t1.setStatus("Pending");
+                t1.setTimestamp(Instant.now().minusSeconds(172800));
+                finRepo.save(t1);
+
+                com.example.demo.model.FinancialTransaction t2 = new com.example.demo.model.FinancialTransaction();
+                t2.setTransactionId("TXN-6002");
+                t2.setStatus("Completed");
+                t2.setTimestamp(Instant.now().minusSeconds(604800));
+                finRepo.save(t2);
+            }
         };
     }
 }
