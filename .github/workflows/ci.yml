@@ -42,6 +42,9 @@ jobs:
       - name: Run frontend tests
         run: cd frontend && (yarn test || npm test || echo "No frontend tests found")
 
+      - name: Accessibility tests
+        run: cd frontend && (yarn test:axe || npm run test:axe)
+
       - name: Build backend Docker image
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eni-backend:staging .
 
