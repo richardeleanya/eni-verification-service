@@ -64,6 +64,21 @@ public class DemoApplication {
                 d2.setDate(Instant.now().minusSeconds(864000));
                 dwpRepo.save(d2);
             }
+
+            com.example.demo.repository.NhsAppointmentRepository nhsRepo = ctx.getBean(com.example.demo.repository.NhsAppointmentRepository.class);
+            if (nhsRepo.count() == 0) {
+                com.example.demo.model.NhsAppointment n1 = new com.example.demo.model.NhsAppointment();
+                n1.setAppointmentId("APT-4001");
+                n1.setStatus("Scheduled");
+                n1.setDate(Instant.now().minusSeconds(259200));
+                nhsRepo.save(n1);
+
+                com.example.demo.model.NhsAppointment n2 = new com.example.demo.model.NhsAppointment();
+                n2.setAppointmentId("APT-4002");
+                n2.setStatus("Completed");
+                n2.setDate(Instant.now().minusSeconds(604800));
+                nhsRepo.save(n2);
+            }
         };
     }
 }
