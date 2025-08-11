@@ -1,51 +1,31 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.PoliceRecordDto;
-import com.example.demo.payload.PoliceRecordResponse;
+import com.example.demo.model.PoliceRecord;
+import com.example.demo.service.PoliceRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/police")
-@Tag(name = "Police Services", description = "Police record endpoints (stub)")
+@Tag(name = "Police Services", description = "Police record endpoints")
 public class IntegrationPoliceController {
 
+    @Autowired
+    private PoliceRecordService policeRecordService;
+
     @GetMapping
-    @Operation(summary = "List police records (stub data)")
-    public List<PoliceRecordResponse> list() {
-        List<PoliceRecordResponse> records = new ArrayList<>();
-        records.add(sampleRecord(1L));
-        records.add(sampleRecord(2L));
-        return records;
+    @Operation(summary = "List police records (real data)")
+    public List<PoliceRecord> list() {
+        return policeRecordService.getAll();
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get police record by id (stub)")
-    public PoliceRecordResponse get(@PathVariable Long id) {
-        return sampleRecord(id);
-    }
-
-    @GetMapping("/{id}/audit")
-    @Operation(summary = "Get police record audit trail (stub)")
-    public List<Map<String, Object>> getAudit(@PathVariable Long id) {
-        Instant now = Instant.now();
-        List<Map<String, Object>> audit = new ArrayList<>();
-        audit.add(Map.of("action", "CREATED", "by", "officer", "at", now));
-        audit.add(Map.of("action", "REVIEWED", "by", "sergeant", "at", now.plusSeconds(3600)));
-        return audit;
-    }
-
-    private PoliceRecordResponse sampleRecord(Long id) {
-        PoliceRecordResponse resp = new PoliceRecordResponse();
-        resp.setId(id);
-        resp.setCaseId("CASE-" + String.format("%04d", id));
-        resp.setStatus(id % 2 == 0 ? "Closed" : "Active");
-        resp.setReportedAt(Instant.now().minusSeconds(id * 86400));
-        return resp;
+    @Operation(summary = "Get police record by id (real data)")
+    public PoliceRecord get(@PathVariable Long id) {
+        return policeRecordService.getById(id);
     }
 }

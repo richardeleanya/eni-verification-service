@@ -11,7 +11,9 @@ public class PoliceRecord {
     private Long id;
 
     private String caseId;
+
     private String status;
+
     private Instant reportedAt;
 
     // Getters and setters
