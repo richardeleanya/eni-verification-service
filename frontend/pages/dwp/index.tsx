@@ -1,38 +1,91 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Grid,
-  GridItem,
+  Button,
   Heading,
-  SimpleGrid,
-  Text,
-  Card,
-  CardBody,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
-  Skeleton,
+  Spinner,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import Layout from '../../components/Layout';
-
-const kpis = [
-  { title: 'Benefit Claims', value: 0, color: 'accent.green' },
-  { title: 'Capability Assessments', value: 0, color: 'accent.green' },
-  { title: 'Universal Credit Status Checks', value: 0, color: 'accent.red' },
-];
-
 import withAuth from '../../hocs/withAuth';
 
-const DWPDashboard = () => (
-  <Layout>
-    <Heading size="lg" mb={4}>
-      DWP Dashboard
-    </Heading>
-    ...
-  </Layout>
-);
+type DwpApp = {
+  id: number;
+  applicationId: string;
+  status: string;
+  date?: string;
+};
 
-export default withAuth(DWPDashboard);
+const DwpListPage: React.FC = () => {
+  const [apps, setApps] = useState<DwpApp[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/dwp')
+      .then((res) => res.json())
+      .then((data) => setApps(data))
+      .catch(() => setApps([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <Layout>
+      <Heading size="lg" mb={6}>
+        DWP Applications
+      </Heading>
+      <Box bg="white" borderRadius="md" boxShadow="sm" p={4}>
+        <Table size="sm">
+          <Thead>
+            <Tr>
+              <Th>Application ID</Th>
+              <Th>Status</Th>
+              <Th>Date</Th>
+              <Th>Actions</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {loading ? (
+              <Tr>
+                <Td colSpan={4}>
+                  <Spinner size="sm" />
+                </Td>
+              </Tr>
+            ) : apps.length === 0 ? (
+              <Tr>
+                <Td colSpan={4} textAlign="center">
+                  No applications found.
+                </Td>
+              </Tr>
+            ) : (
+              apps.map((a) => (
+                <Tr key={a.id}>
+                  <Td>{a.applicationId}</Td>
+                  <Td>{a.status}</Td>
+                  <Td>
+                    {a.date ? new Date(a.date).toLocaleString() : '-'}
+                  </Td>
+                  <Td>
+                    <NextLink href={`/dwp/${a.id}`} passHref>
+                      <Button as="a" size="sm" colorScheme="blue" variant="outline">
+                        View
+                      </Button>
+                    </NextLink>
+                  </Td>
+                </Tr>
+              ))
+            )}
+          </Tbody>
+        </Table>
+      </Box>
+    </Layout>
+  );
+};
+
+export default withAuth(DwpListPage);
