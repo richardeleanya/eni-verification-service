@@ -8,18 +8,23 @@ import ApplicationDetailPanel from '../../components/home-office/ApplicationDeta
 
 const HomeOfficeWorkbench: React.FC = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   return (
     <Layout>
       <Heading size="lg" mb={6}>
         Visa Application Workbench
       </Heading>
-      <CaseSearchInput />
+      <CaseSearchInput
+        searchTerm={searchTerm}
+        onSearch={setSearchTerm}
+      />
       <Grid templateColumns={['1fr', '2.5fr 1fr']} gap={8} mt={6}>
         <GridItem>
           <ApplicationTable
             onSelect={(id) => setSelectedId(id)}
             selectedId={selectedId}
+            searchTerm={searchTerm}
           />
         </GridItem>
         <GridItem>

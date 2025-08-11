@@ -31,20 +31,26 @@ const statusColor = (status: string) =>
 type ApplicationTableProps = {
   onSelect?: (id: number) => void;
   selectedId?: number | null;
+  searchTerm?: string;
 };
 
-const ApplicationTable: React.FC<ApplicationTableProps> = ({ onSelect, selectedId }) => {
+const ApplicationTable: React.FC<ApplicationTableProps> = ({ onSelect, selectedId, searchTerm }) => {
   const [data, setData] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    fetch('/api/home-office/applications')
+    const url =
+      '/api/home-office/applications' +
+      (searchTerm && searchTerm.trim() !== ''
+        ? `?q=${encodeURIComponent(searchTerm.trim())}`
+        : '');
+    fetch(url)
       .then((res) => res.json())
       .then((rows) => setData(rows))
       .catch(() => setData([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [searchTerm]);
 
   return (
     <Box bg="white" borderRadius="md" boxShadow="sm" p={4}>

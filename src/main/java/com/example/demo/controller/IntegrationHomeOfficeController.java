@@ -16,12 +16,26 @@ public class IntegrationHomeOfficeController {
 
     @GetMapping
     @Operation(summary = "List visa applications (stub data)")
-    public List<Map<String, Object>> list() {
+    public List<Map<String, Object>> list(
+            @RequestParam(value = "q", required = false) String q
+    ) {
         List<Map<String, Object>> out = new ArrayList<>();
         out.add(stubApplication(1001L, "Aliya Khan", "Pending"));
         out.add(stubApplication(1002L, "John Doe", "Approved"));
         out.add(stubApplication(1003L, "Maria Silva", "Rejected"));
-        return out;
+        if (q == null || q.isBlank()) {
+            return out;
+        }
+        String query = q.trim().toLowerCase();
+        List<Map<String, Object>> filtered = new ArrayList<>();
+        for (Map<String, Object> app : out) {
+            String name = ((String) app.get("applicantName")).toLowerCase();
+            String idStr = app.get("id").toString();
+            if (name.contains(query) || idStr.equals(query)) {
+                filtered.add(app);
+            }
+        }
+        return filtered;
     }
 
     @GetMapping("/{id}")
