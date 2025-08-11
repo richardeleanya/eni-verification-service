@@ -66,4 +66,22 @@ public class EmployerController {
         resp.setVerifiedAt(dto.getVerifiedAt());
         return resp;
     }
+
+    @GetMapping("/{id}/audit")
+    @Operation(summary = "Get audit trail for employer (stub)")
+    public List<Map<String, Object>> getAuditTrail(@PathVariable Long id) {
+        Instant now = Instant.now();
+        List<Map<String, Object>> audit = new ArrayList<>();
+        audit.add(Map.of(
+                "action", "CREATED",
+                "by", "system",
+                "at", now
+        ));
+        audit.add(Map.of(
+                "action", "VERIFIED",
+                "by", "admin",
+                "at", now.plusSeconds(3600)
+        ));
+        return audit;
+    }
 }
