@@ -25,6 +25,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import Layout from '../../components/Layout';
+import VerifyModal from '../../components/VerifyModal';
 
 type Employer = {
   id: number;
@@ -42,6 +43,14 @@ const EmployersPage: React.FC = () => {
   const [error, setError] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+
+  // For verify modal
+  const {
+    isOpen: isVerifyOpen,
+    onOpen: openVerifyModal,
+    onClose: closeVerifyModal,
+  } = useDisclosure();
+  const [selectedEmployerId, setSelectedEmployerId] = useState<number | null>(null);
 
   const fetchEmployers = async () => {
     setLoading(true);
@@ -89,6 +98,38 @@ const EmployersPage: React.FC = () => {
     setSubmitting(false);
   };
 
+  const handleVerifyClick = (employerId: number) => {
+    setSelectedEmployerId(employerId);
+    openVerifyModal();
+  };
+
+  const handleVerifySubmit = async ({ verify, reviewer }: { verify: boolean; reviewer: string }) => {
+    if (selectedEmployerId == null) return;
+    try {
+      const res = await fetch(`/api/employers/${selectedEmployerId}/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verify, reviewer }),
+      });
+      if (!res.ok) throw new Error('Verification failed');
+      await fetchEmployers();
+      toast({
+        title: verify ? 'Employer approved' : 'Employer rejected',
+        status: verify ? 'success' : 'warning',
+        duration: 2500,
+        isClosable: true,
+      });
+      closeVerifyModal();
+    } catch (e) {
+      toast({
+        title: 'Verification failed',
+        status: 'error',
+        duration: 2500,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Layout>
       <Heading size="lg" mb={6}>Employers</Heading>
@@ -105,18 +146,19 @@ const EmployersPage: React.FC = () => {
               <Th>Status</Th>
               <Th>Submitted</Th>
               <Th>Verified</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
             {loading ? (
               <Tr>
-                <Td colSpan={4}>
+                <Td colSpan={5}>
                   <Skeleton height="20px" />
                 </Td>
               </Tr>
             ) : employers.length === 0 ? (
               <Tr>
-                <Td colSpan={4} textAlign="center">No employers found.</Td>
+                <Td colSpan={5} textAlign="center">No employers found.</Td>
               </Tr>
             ) : (
               employers.map((employer) => (
@@ -125,12 +167,24 @@ const EmployersPage: React.FC = () => {
                   <Td>{employer.verificationStatus}</Td>
                   <Td>{employer.submittedAt ? new Date(employer.submittedAt).toLocaleString() : ''}</Td>
                   <Td>{employer.verifiedAt ? new Date(employer.verifiedAt).toLocaleString() : '-'}</Td>
+                  <Td>
+                    <Button
+                      size="sm"
+                      colorScheme="green"
+                      variant="outline"
+                      onClick={() => handleVerifyClick(employer.id)}
+                      isDisabled={employer.verificationStatus !== 'PENDING'}
+                    >
+                      Verify
+                    </Button>
+                  </Td>
                 </Tr>
               ))
             )}
           </Tbody>
         </Table>
       </Box>
+      {/* New Submission Modal */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -163,6 +217,12 @@ const EmployersPage: React.FC = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      {/* Verify Modal */}
+      <VerifyModal
+        isOpen={isVerifyOpen}
+        onClose={closeVerifyModal}
+        onSubmit={handleVerifySubmit}
+      />
     </Layout>
   );
 };
