@@ -23,19 +23,12 @@ type PoliceRecordResponse = {
   status: string;
   reportedAt?: string;
 };
-type AuditEntry = {
-  action: string;
-  by: string;
-  at: string;
-};
 
 const PoliceRecordDetailPage: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const [record, setRecord] = useState<PoliceRecordResponse | null>(null);
-  const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [auditLoading, setAuditLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -52,13 +45,6 @@ const PoliceRecordDetailPage: React.FC = () => {
           setRecord(null);
         })
         .finally(() => setLoading(false));
-
-      setAuditLoading(true);
-      fetch(`/api/police/${id}/audit`)
-        .then((res) => res.json())
-        .then((data) => setAudit(data))
-        .catch(() => setAudit([]))
-        .finally(() => setAuditLoading(false));
     }
   }, [id]);
 
@@ -102,7 +88,9 @@ const PoliceRecordDetailPage: React.FC = () => {
           <Heading size="md" mb={2}>
             Audit Trail
           </Heading>
-          <AuditTrail entries={audit} loading={auditLoading} />
+          {typeof id === 'string' && (
+            <AuditTrail domain="police" entityId={parseInt(id)} />
+          )}
         </>
       ) : (
         <Text>No data.</Text>
