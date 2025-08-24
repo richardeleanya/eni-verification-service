@@ -125,7 +125,7 @@ const AuditTrail: React.FC<Props> = ({ domain, entityId, pageSize = 5 }) => {
       {loading && page === 0 ? (
         <Spinner size="sm" />
       ) : !entries || entries.length === 0 ? (
-        <ListItem color="gray.500">No audit events yet.</ListItem>
+        <List><ListItem color="gray.500">No audit events yet.</ListItem></List>
       ) : (
         <List spacing={2}>
           {entries.map((entry) => (

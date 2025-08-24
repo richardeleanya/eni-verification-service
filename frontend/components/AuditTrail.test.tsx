@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AuditTrail from './AuditTrail';
+import { ChakraProvider } from '@chakra-ui/react';
 
 const page1 = {
   totalElements: 3,
@@ -37,22 +38,22 @@ afterEach(() => {
 });
 
 test('renders AuditTrail and loads more entries', async () => {
-  render(<AuditTrail domain="test" entityId={1} pageSize={2} />);
-  expect(await screen.findByText('A1')).toBeInTheDocument();
-  expect(screen.getByText('A2')).toBeInTheDocument();
-  // Only two entries should be in the document
-  expect(screen.queryByText('A3')).not.toBeInTheDocument();
+  render(<ChakraProvider><AuditTrail domain="test" entityId={1} pageSize={2} /></ChakraProvider>);
+
+  const listItems = await screen.findAllByRole('listitem');
+  expect(listItems).toHaveLength(2);
+  expect(listItems[0]).toHaveTextContent('A1');
+  expect(listItems[1]).toHaveTextContent('A2');
+
   // Load More button shows
   expect(screen.getByText(/Load More/)).toBeInTheDocument();
 
   // Click Load More
   fireEvent.click(screen.getByText(/Load More/));
   // Wait for third entry to appear
-  await waitFor(() => {
-    expect(screen.getByText('A3')).toBeInTheDocument();
+  await waitFor(async () => {
+    const allListItems = await screen.findAllByRole('listitem');
+    expect(allListItems).toHaveLength(3);
+    expect(allListItems[2]).toHaveTextContent('A3');
   });
-  // All three should now be in the document
-  expect(screen.getByText('A1')).toBeInTheDocument();
-  expect(screen.getByText('A2')).toBeInTheDocument();
-  expect(screen.getByText('A3')).toBeInTheDocument();
 });

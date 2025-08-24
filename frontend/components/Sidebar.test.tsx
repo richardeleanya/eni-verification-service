@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import Sidebar from './Sidebar';
 
 // Mock useAuth
@@ -31,7 +32,7 @@ describe('Sidebar role-based rendering', () => {
 
   it('shows no agencies when no user is logged in', () => {
     useAuth.mockReturnValue({ user: null });
-    render(<Sidebar />);
+    render(<ChakraProvider><Sidebar /></ChakraProvider>);
     agencyTitles.forEach((title) => {
       expect(screen.queryByText(title)).not.toBeInTheDocument();
     });
@@ -45,7 +46,7 @@ describe('Sidebar role-based rendering', () => {
         roles: ['ROLE_HMRC'],
       },
     });
-    render(<Sidebar />);
+    render(<ChakraProvider><Sidebar /></ChakraProvider>);
     expect(screen.getByText('HMRC')).toBeInTheDocument();
     agencyTitles
       .filter((t) => t !== 'HMRC')
@@ -62,7 +63,7 @@ describe('Sidebar role-based rendering', () => {
         roles: ['ROLE_ADMIN'],
       },
     });
-    render(<Sidebar />);
+    render(<ChakraProvider><Sidebar /></ChakraProvider>);
     agencyTitles.forEach((title) => {
       expect(screen.getByText(title)).toBeInTheDocument();
     });

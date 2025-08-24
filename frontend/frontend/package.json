@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@storybook/test-runner": "^0.23.0"
+  }
+}
