@@ -33,6 +33,12 @@ public class IntegrationHousingRentalControllerTest {
     private HousingRentalRecordService housingRentalRecordService;
 
     @MockBean
+    private com.example.demo.service.rate.RateLimitingService rateLimitingService;
+
+    @MockBean
+    private com.example.demo.security.JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
     private com.example.demo.security.JwtUtil jwtUtil;
 
     @MockBean

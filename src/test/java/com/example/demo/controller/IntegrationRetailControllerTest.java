@@ -33,6 +33,12 @@ public class IntegrationRetailControllerTest {
     private RetailTransactionService retailTransactionService;
 
     @MockBean
+    private com.example.demo.service.rate.RateLimitingService rateLimitingService;
+
+    @MockBean
+    private com.example.demo.security.JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
     private com.example.demo.security.JwtUtil jwtUtil;
 
     @MockBean

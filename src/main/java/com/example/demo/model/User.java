@@ -22,6 +22,10 @@ public class User {
     @Column(name = "username", unique = true)
     private String username;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plan")
+    private PricingPlan pricingPlan = PricingPlan.FREE;
+
     // Getters and Setters
     public Long getId() { return id; }
 
@@ -36,4 +40,7 @@ public class User {
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
+
+    public PricingPlan getPricingPlan() { return pricingPlan; }
+    public void setPricingPlan(PricingPlan pricingPlan) { this.pricingPlan = pricingPlan; }
 }

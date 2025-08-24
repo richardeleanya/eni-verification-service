@@ -2,6 +2,8 @@ package com.example.demo.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import com.example.demo.model.PricingPlan;
+import com.example.demo.security.UserDetailsImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,13 +18,14 @@ public class JwtTokenProvider {
     private final long jwtExpirationInMs = 86400000; // 24 hours
 
     public String generateToken(Authentication authentication) {
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
+                .claim("plan", userPrincipal.getUser().getPricingPlan().name())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key)
@@ -36,6 +39,16 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public PricingPlan getPlanFromJWT(String token) {
+        String plan = (String) Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("plan");
+        return PricingPlan.valueOf(plan);
     }
 
     public boolean validateToken(String authToken) {

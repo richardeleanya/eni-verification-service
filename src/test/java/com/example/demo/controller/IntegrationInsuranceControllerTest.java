@@ -32,6 +32,12 @@ public class IntegrationInsuranceControllerTest {
     private InsuranceRecordService insuranceRecordService;
 
     @MockBean
+    private com.example.demo.service.rate.RateLimitingService rateLimitingService;
+
+    @MockBean
+    private com.example.demo.security.JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
     private com.example.demo.security.JwtUtil jwtUtil;
 
     @MockBean
