@@ -14,6 +14,13 @@ export type HousingRentalRecord = {
   updatedAt: string;
 };
 
+export type Consent = {
+  id: number;
+  agencyFrom: string;
+  agencyTo: string;
+  granted: boolean;
+};
+
 export type RetailTransaction = {
   id: number;
   customerName: string;
