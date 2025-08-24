@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "policyHolderName": "John Doe",
+    "policyNumber": "POL-12345",
+    "policyType": "AUTO",
+    "coverageAmount": 50000.00,
+    "verificationStatus": "PENDING",
+    "submittedAt": "2023-01-15T10:00:00Z",
+    "verifiedAt": null,
+    "createdBy": "user",
+    "createdAt": "2023-01-15T10:00:00Z",
+    "updatedBy": null,
+    "updatedAt": null
+  },
+  {
+    "id": 2,
+    "policyHolderName": "Jane Smith",
+    "policyNumber": "POL-67890",
+    "policyType": "HOME",
+    "coverageAmount": 250000.00,
+    "verificationStatus": "VERIFIED",
+    "submittedAt": "2022-05-20T11:00:00Z",
+    "verifiedAt": "2022-05-25T14:00:00Z",
+    "createdBy": "user",
+    "createdAt": "2022-05-20T11:00:00Z",
+    "updatedBy": "admin",
+    "updatedAt": "2022-05-25T14:00:00Z"
+  }
+]

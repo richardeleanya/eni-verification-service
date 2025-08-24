@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "tenantName": "John Doe",
+    "propertyAddress": "123 Main St, Anytown, USA",
+    "leaseStartDate": "2023-01-01",
+    "leaseEndDate": "2023-12-31",
+    "rentAmount": 1200.00,
+    "verificationStatus": "PENDING",
+    "submittedAt": "2023-01-15T10:00:00Z",
+    "verifiedAt": null,
+    "createdBy": "user",
+    "createdAt": "2023-01-15T10:00:00Z",
+    "updatedBy": null,
+    "updatedAt": null
+  },
+  {
+    "id": 2,
+    "tenantName": "Jane Smith",
+    "propertyAddress": "456 Oak Ave, Anytown, USA",
+    "leaseStartDate": "2022-06-01",
+    "leaseEndDate": "2023-05-31",
+    "rentAmount": 1500.00,
+    "verificationStatus": "VERIFIED",
+    "submittedAt": "2022-05-20T11:00:00Z",
+    "verifiedAt": "2022-05-25T14:00:00Z",
+    "createdBy": "user",
+    "createdAt": "2022-05-20T11:00:00Z",
+    "updatedBy": "admin",
+    "updatedAt": "2022-05-25T14:00:00Z"
+  }
+]

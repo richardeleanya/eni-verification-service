@@ -1,0 +1,118 @@
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Heading,
+  Grid,
+  GridItem,
+  Spinner,
+  Alert,
+  AlertIcon,
+  useToast,
+} from '@chakra-ui/react';
+import Layout from '../../components/Layout';
+import withAuth from '../../hocs/withAuth';
+import InsuranceRecordTable from '../../components/insurance/InsuranceRecordTable';
+import InsuranceRecordDetailPanel from '../../components/insurance/InsuranceRecordDetailPanel';
+import { InsuranceRecord } from '../../types';
+
+const InsuranceWorkbench: React.FC = () => {
+  const [records, setRecords] = useState<InsuranceRecord[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<InsuranceRecord | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const response = await fetch('/api/integrations/insurance');
+        if (!response.ok) {
+          throw new Error('Failed to fetch insurance records');
+        }
+        const data = await response.json();
+        setRecords(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRecords();
+  }, []);
+
+  const handleVerify = async (id: number) => {
+    try {
+      const response = await fetch(`/api/integrations/insurance/${id}/verify`, {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to verify insurance record');
+      }
+      const updatedRecord = await response.json();
+      setRecords(records.map(r => r.id === id ? updatedRecord : r));
+      if (selectedRecord?.id === id) {
+        setSelectedRecord(updatedRecord);
+      }
+      toast({
+        title: 'Record verified',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error verifying record',
+        description: error.message,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleRowClick = (record: InsuranceRecord) => {
+    setSelectedRecord(record);
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <Alert status="error">
+          <AlertIcon />
+          {error}
+        </Alert>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <Heading size="lg" mb={4}>
+        Insurance Workbench
+      </Heading>
+      <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+        <GridItem colSpan={2}>
+          <Box bg="white" p={6} rounded="md" shadow="md">
+            <InsuranceRecordTable records={records} onVerify={handleVerify} onRowClick={handleRowClick} />
+          </Box>
+        </GridItem>
+        <GridItem colSpan={1}>
+          <Box bg="white" p={6} rounded="md" shadow="md">
+            <InsuranceRecordDetailPanel record={selectedRecord} />
+          </Box>
+        </GridItem>
+      </Grid>
+    </Layout>
+  );
+};
+
+export default withAuth(InsuranceWorkbench);
