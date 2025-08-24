@@ -6,7 +6,7 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.AuthService;
-import com.example.demo.util.JwtUtil;
+import com.example.demo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
                 .authorities(Collections.emptyList())
                 .build();
 
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(userDetails.getUsername());
         return new AuthResponse(user.getEmail(), token);
     }
 
@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
                 .authorities(Collections.emptyList())
                 .build();
 
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(userDetails.getUsername());
         return new AuthResponse(user.getEmail(), token);
     }
 }

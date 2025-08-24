@@ -30,6 +30,7 @@ public class EmployerControllerIntegrationTest {
     private Long createdEmployerId;
 
     @BeforeEach
+    @org.springframework.security.test.context.support.WithMockUser(roles = "USER")
     void setUp() throws Exception {
         // Submit a test employer for GET by id
         EmployerRequest request = new EmployerRequest();
@@ -50,6 +51,7 @@ public class EmployerControllerIntegrationTest {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles = "USER")
     void testGetEmployersReturnsOkAndJsonArray() throws Exception {
         mockMvc.perform(get("/api/employers"))
                 .andExpect(status().isOk())
@@ -58,6 +60,7 @@ public class EmployerControllerIntegrationTest {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles = "USER")
     void testPostEmployerReturnsOkAndCorrectResponse() throws Exception {
         EmployerRequest request = new EmployerRequest();
         request.setCompanyName("Another Co");
@@ -72,6 +75,7 @@ public class EmployerControllerIntegrationTest {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles = "USER")
     void testGetEmployerByIdReturnsCorrectEmployer() throws Exception {
         mockMvc.perform(get("/api/employers/{id}", createdEmployerId))
                 .andExpect(status().isOk())

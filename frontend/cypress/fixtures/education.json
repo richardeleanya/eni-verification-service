@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "studentName": "John Doe",
+    "institution": "University of Spring",
+    "qualification": "BSc Computer Science",
+    "conferralDate": "2023-05-20",
+    "verificationStatus": "PENDING",
+    "submittedAt": "2023-01-15T10:00:00Z",
+    "verifiedAt": null,
+    "createdBy": "user",
+    "createdAt": "2023-01-15T10:00:00Z",
+    "updatedBy": null,
+    "updatedAt": null
+  },
+  {
+    "id": 2,
+    "studentName": "Jane Smith",
+    "institution": "College of Next.js",
+    "qualification": "MSc Web Development",
+    "conferralDate": "2022-11-30",
+    "verificationStatus": "VERIFIED",
+    "submittedAt": "2022-10-01T14:30:00Z",
+    "verifiedAt": "2022-10-05T11:00:00Z",
+    "createdBy": "user",
+    "createdAt": "2022-10-01T14:30:00Z",
+    "updatedBy": "admin",
+    "updatedAt": "2022-10-05T11:00:00Z"
+  }
+]
