@@ -3,10 +3,10 @@ import ConsentPage from '../pages/consent';
 import * as consentService from '../services/consentService';
 import { Consent } from '../types';
 import { ChakraProvider } from '@chakra-ui/react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 
 jest.mock('../services/consentService');
-jest.mock('../hooks/useAuth');
+jest.mock('../context/AuthContext');
 
 const mockGetConsents = consentService.getConsents as jest.Mock;
 const mockUpdateConsent = consentService.updateConsent as jest.Mock;
@@ -25,8 +25,8 @@ describe('ConsentPage', () => {
       user: {
         username: 'testuser',
         roles: ['ROLE_ADMIN'],
-        token: 'test-token',
       },
+      token: 'test-token',
       loading: false,
       login: jest.fn(),
       logout: jest.fn(),

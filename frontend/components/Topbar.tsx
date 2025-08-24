@@ -12,6 +12,7 @@ import {
   MenuList,
   MenuItem,
   Text,
+  Button,
   Badge,
   HStack,
   Spacer,
@@ -78,13 +79,15 @@ const Topbar: React.FC = () => {
             </Badge>
           </Box>
           <Menu>
-            <MenuButton as={Flex} align="center" gap={2} cursor="pointer">
-              <Avatar size="sm" name="Jane Smith" />
-              {!isMobile && (
-                <Text fontWeight="medium" fontSize="md" color="brand.900">
-                  Jane Smith
-                </Text>
-              )}
+            <MenuButton as={Button} variant="ghost" p={2}>
+              <Flex align="center" gap={2}>
+                <Avatar size="sm" name="Jane Smith" />
+                {!isMobile && (
+                  <Text fontWeight="medium" fontSize="md" color="brand.900">
+                    Jane Smith
+                  </Text>
+                )}
+              </Flex>
             </MenuButton>
             <MenuList>
               <MenuItem>My Profile</MenuItem>
