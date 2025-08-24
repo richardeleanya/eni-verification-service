@@ -6,6 +6,7 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import com.example.demo.dto.TfaVerificationRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-2fa")
+    public ResponseEntity<AuthResponse> verifyTfa(@RequestBody TfaVerificationRequest request) {
+        AuthResponse response = authService.verifyTfa(request);
         return ResponseEntity.ok(response);
     }
 }

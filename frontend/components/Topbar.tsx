@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { MdNotifications } from 'react-icons/md';
+import Link from 'next/link';
 
 const Topbar: React.FC = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -91,6 +92,9 @@ const Topbar: React.FC = () => {
             </MenuButton>
             <MenuList>
               <MenuItem>My Profile</MenuItem>
+              <Link href="/settings/2fa" passHref>
+                <MenuItem>2FA Settings</MenuItem>
+              </Link>
               <MenuItem>Settings</MenuItem>
               <MenuItem color="red.500">Logout</MenuItem>
             </MenuList>

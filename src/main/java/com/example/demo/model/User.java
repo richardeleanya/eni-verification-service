@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +31,17 @@ public class User {
     @Column(name = "risk_score")
     private int riskScore = 0;
 
+    @Column(name = "tfa_secret")
+    private String tfaSecret;
+
+    @Column(name = "tfa_enabled")
+    private boolean tfaEnabled = false;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private List<String> roles = new ArrayList<>();
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -50,4 +63,13 @@ public class User {
 
     public int getRiskScore() { return riskScore; }
     public void setRiskScore(int riskScore) { this.riskScore = riskScore; }
+
+    public String getTfaSecret() { return tfaSecret; }
+    public void setTfaSecret(String tfaSecret) { this.tfaSecret = tfaSecret; }
+
+    public boolean isTfaEnabled() { return tfaEnabled; }
+    public void setTfaEnabled(boolean tfaEnabled) { this.tfaEnabled = tfaEnabled; }
+
+    public List<String> getRoles() { return roles; }
+    public void setRoles(List<String> roles) { this.roles = roles; }
 }

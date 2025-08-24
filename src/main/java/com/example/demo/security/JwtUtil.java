@@ -20,12 +20,13 @@ public class JwtUtil {
         this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    public String generateToken(String username) {
+    public String generateToken(UserDetails userDetails) {
         long nowMillis = System.currentTimeMillis();
         long expMillis = nowMillis + 3600000; // 1 hour
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userDetails.getUsername())
+                .claim("roles", userDetails.getAuthorities().stream().map(auth -> auth.getAuthority()).toList())
                 .setIssuedAt(new Date(nowMillis))
                 .setExpiration(new Date(expMillis))
                 .signWith(key)

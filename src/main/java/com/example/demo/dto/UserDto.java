@@ -10,4 +10,5 @@ public class UserDto {
     private String password;
     private String email;
     private PricingPlan pricingPlan;
+    private boolean tfaEnabled;
 }

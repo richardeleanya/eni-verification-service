@@ -4,13 +4,14 @@ export type AuthUser = {
   id: number;
   username: string;
   roles: string[];
-  // Add more fields as needed
+  tfaEnabled: boolean;
 };
 
 type AuthContextType = {
   user: AuthUser | null;
   token: string | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<any>;
+  verifyTfa: (username: string, code: string) => Promise<void>;
   logout: () => void;
   fetchAuth: typeof fetch;
 };
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
   login: async () => {},
+  verifyTfa: async () => {},
   logout: () => {},
   fetchAuth: fetch,
 });
@@ -42,7 +44,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     if (!res.ok) throw new Error('Invalid credentials');
     const data = await res.json();
-    // Ensure roles is an array (API should provide it)
+    if (data.tfaRequired) {
+      return data;
+    }
+    const userWithRoles = {
+      ...data.user,
+      roles: Array.isArray(data.user.roles) ? data.user.roles : [],
+    };
+    setToken(data.token);
+    setUser(userWithRoles);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(userWithRoles));
+    return data;
+  };
+
+  const verifyTfa = async (username: string, code: string) => {
+    const res = await fetch('/api/auth/verify-2fa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: username, code }),
+    });
+    if (!res.ok) throw new Error('Invalid 2FA code');
+    const data = await res.json();
     const userWithRoles = {
       ...data.user,
       roles: Array.isArray(data.user.roles) ? data.user.roles : [],
@@ -68,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, fetchAuth }}>
+    <AuthContext.Provider value={{ user, token, login, verifyTfa, logout, fetchAuth }}>
       {children}
     </AuthContext.Provider>
   );
