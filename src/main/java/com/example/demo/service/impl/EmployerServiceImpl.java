@@ -6,9 +6,13 @@ import com.example.demo.model.Employer;
 import com.example.demo.model.Employer.VerificationStatus;
 import com.example.demo.model.AuditLog;
 import com.example.demo.repository.EmployerRepository;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.AuditLogRepository;
 import com.example.demo.service.EmployerService;
+import com.example.demo.service.RiskScoringService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,6 +28,12 @@ public class EmployerServiceImpl implements EmployerService {
 
     @Autowired
     private AuditLogRepository auditLogRepository;
+
+    @Autowired
+    private RiskScoringService riskScoringService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private EmployerDto mapToDto(Employer e) {
         EmployerDto dto = new EmployerDto();
@@ -76,10 +86,11 @@ public class EmployerServiceImpl implements EmployerService {
     }
 
     @Override
-    public EmployerDto verify(Long id, VerificationActionDto actionDto) {
+    public EmployerDto verify(Long id, VerificationActionDto actionDto, UserDetails userDetails) {
         Employer employer = employerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Employer not found"));
         String action;
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
         if (actionDto.isVerify()) {
             employer.setVerificationStatus(VerificationStatus.VERIFIED);
             employer.setVerifiedAt(Instant.now());
@@ -89,6 +100,9 @@ public class EmployerServiceImpl implements EmployerService {
             employer.setVerifiedAt(Instant.now());
             action = "REJECTED";
         }
+        int riskScore = riskScoringService.calculateRiskScore(user);
+        user.setRiskScore(riskScore);
+        userRepository.save(user);
         Employer saved = employerRepository.save(employer);
 
         // Record audit log
