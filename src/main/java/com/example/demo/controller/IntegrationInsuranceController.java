@@ -1,39 +1,43 @@
 package com.example.demo.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.example.demo.dto.InsuranceRecordDto;
+import com.example.demo.service.InsuranceRecordService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/insurance")
-@Tag(name = "Insurance Companies", description = "Insurance claim endpoints (stub)")
+@RequestMapping("/api/integrations/insurance")
+@PreAuthorize("hasRole('USER')")
 public class IntegrationInsuranceController {
+
+    private final InsuranceRecordService insuranceRecordService;
+
+    public IntegrationInsuranceController(InsuranceRecordService insuranceRecordService) {
+        this.insuranceRecordService = insuranceRecordService;
+    }
+
     @GetMapping
-    @Operation(summary = "List Insurance claims (stub data)")
-    public List<Map<String, Object>> list() {
-        List<Map<String, Object>> result = new ArrayList<>();
-        result.add(stubRec(1L));
-        result.add(stubRec(2L));
-        return result;
+    public ResponseEntity<List<InsuranceRecordDto>> getAllInsuranceRecords() {
+        return ResponseEntity.ok(insuranceRecordService.getAllInsuranceRecords());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get Insurance claim by id (stub)")
-    public Map<String, Object> get(@PathVariable Long id) {
-        return stubRec(id);
+    public ResponseEntity<InsuranceRecordDto> getInsuranceRecordById(@PathVariable Long id) {
+        return ResponseEntity.ok(insuranceRecordService.getInsuranceRecordById(id));
     }
 
-    private Map<String, Object> stubRec(Long id) {
-        return Map.of(
-                "id", id,
-                "claimId", "CLM-" + String.format("%06d", id),
-                "status", id % 2 == 0 ? "Settled" : "Open",
-                "date", Instant.now().minusSeconds(id * 86400).toString()
-        );
+    @PostMapping
+    public ResponseEntity<InsuranceRecordDto> createInsuranceRecord(@RequestBody InsuranceRecordDto insuranceRecordDto) {
+        InsuranceRecordDto createdRecord = insuranceRecordService.createInsuranceRecord(insuranceRecordDto);
+        return ResponseEntity.ok(createdRecord);
+    }
+
+    @PostMapping("/{id}/verify")
+    public ResponseEntity<InsuranceRecordDto> verifyInsuranceRecord(@PathVariable Long id) {
+        InsuranceRecordDto verifiedRecord = insuranceRecordService.verifyInsuranceRecord(id);
+        return ResponseEntity.ok(verifiedRecord);
     }
 }
