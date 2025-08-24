@@ -10,6 +10,8 @@ import com.example.demo.service.EmployerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,11 +50,11 @@ public class EmployerController {
 
     @PostMapping("/{id}/verify")
     @Operation(summary = "Verify or reject employer")
-    public VerificationResponse verify(@PathVariable Long id, @RequestBody VerificationRequest req) {
+    public VerificationResponse verify(@PathVariable Long id, @RequestBody VerificationRequest req, @AuthenticationPrincipal UserDetails userDetails) {
         VerificationActionDto actionDto = new VerificationActionDto();
         actionDto.setVerify(req.isVerify());
         actionDto.setReviewer(req.getReviewer());
-        var dto = employerService.verify(id, actionDto);
+        var dto = employerService.verify(id, actionDto, userDetails);
         VerificationResponse resp = new VerificationResponse();
         resp.setEmployerId(dto.getId());
         resp.setNewStatus(dto.getVerificationStatus());

@@ -26,6 +26,9 @@ public class User {
     @Column(name = "plan")
     private PricingPlan pricingPlan = PricingPlan.FREE;
 
+    @Column(name = "risk_score")
+    private int riskScore = 0;
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -44,4 +47,7 @@ public class User {
 
     public PricingPlan getPricingPlan() { return pricingPlan; }
     public void setPricingPlan(PricingPlan pricingPlan) { this.pricingPlan = pricingPlan; }
+
+    public int getRiskScore() { return riskScore; }
+    public void setRiskScore(int riskScore) { this.riskScore = riskScore; }
 }

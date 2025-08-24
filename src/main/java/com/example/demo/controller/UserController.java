@@ -24,4 +24,13 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/{username}/risk-score")
+    public ResponseEntity<Integer> getRiskScore(@PathVariable String username) {
+        Optional<User> optionalUser = Optional.ofNullable(userService.findByUsername(username));
+
+        return optionalUser
+                .map(user -> ResponseEntity.ok(user.getRiskScore()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
