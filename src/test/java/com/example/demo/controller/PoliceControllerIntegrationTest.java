@@ -54,6 +54,7 @@ public class PoliceControllerIntegrationTest {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles = "USER")
     void testGetAllPoliceRecordsReturnsArray() throws Exception {
         String json = mockMvc.perform(get("/api/police").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -74,6 +75,7 @@ public class PoliceControllerIntegrationTest {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles = "USER")
     void testGetPoliceRecordByIdReturnsCorrectAndAudit() throws Exception {
         String json = mockMvc.perform(get("/api/police/" + seededId).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

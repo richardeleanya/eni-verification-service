@@ -52,6 +52,7 @@ public class PoliceAuditIntegrationTest {
     }
 
     @Test
+    @org.springframework.security.test.context.support.WithMockUser(roles = "USER")
     void testGetPoliceAuditLogs() throws Exception {
         String url = "/api/audit?domain=police&entityId=3&page=0&size=10";
         String json = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON))

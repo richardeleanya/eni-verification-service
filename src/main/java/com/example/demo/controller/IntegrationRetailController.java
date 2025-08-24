@@ -1,39 +1,43 @@
 package com.example.demo.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.example.demo.dto.RetailTransactionDto;
+import com.example.demo.service.RetailTransactionService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/retail")
-@Tag(name = "Retail & E-Commerce", description = "Retail & E-Commerce transaction endpoints (stub)")
+@RequestMapping("/api/integrations/retail")
+@PreAuthorize("hasRole('USER')")
 public class IntegrationRetailController {
+
+    private final RetailTransactionService retailTransactionService;
+
+    public IntegrationRetailController(RetailTransactionService retailTransactionService) {
+        this.retailTransactionService = retailTransactionService;
+    }
+
     @GetMapping
-    @Operation(summary = "List Retail transactions (stub data)")
-    public List<Map<String, Object>> list() {
-        List<Map<String, Object>> result = new ArrayList<>();
-        result.add(stubRec(1L));
-        result.add(stubRec(2L));
-        return result;
+    public ResponseEntity<List<RetailTransactionDto>> getAllRetailTransactions() {
+        return ResponseEntity.ok(retailTransactionService.getAllRetailTransactions());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get Retail transaction by id (stub)")
-    public Map<String, Object> get(@PathVariable Long id) {
-        return stubRec(id);
+    public ResponseEntity<RetailTransactionDto> getRetailTransactionById(@PathVariable Long id) {
+        return ResponseEntity.ok(retailTransactionService.getRetailTransactionById(id));
     }
 
-    private Map<String, Object> stubRec(Long id) {
-        return Map.of(
-                "id", id,
-                "transactionId", "RET-" + String.format("%06d", id),
-                "status", id % 2 == 0 ? "Completed" : "Pending",
-                "date", Instant.now().minusSeconds(id * 86400).toString()
-        );
+    @PostMapping
+    public ResponseEntity<RetailTransactionDto> createRetailTransaction(@RequestBody RetailTransactionDto retailTransactionDto) {
+        RetailTransactionDto createdRecord = retailTransactionService.createRetailTransaction(retailTransactionDto);
+        return ResponseEntity.ok(createdRecord);
+    }
+
+    @PostMapping("/{id}/verify")
+    public ResponseEntity<RetailTransactionDto> verifyRetailTransaction(@PathVariable Long id) {
+        RetailTransactionDto verifiedRecord = retailTransactionService.verifyRetailTransaction(id);
+        return ResponseEntity.ok(verifiedRecord);
     }
 }
