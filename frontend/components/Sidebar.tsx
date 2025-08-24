@@ -30,6 +30,7 @@ const groupIcons: Record<string, React.ReactNode> = {
   education: <MdSchool />,
   retail: <MdStore />,
   insurance: <MdAccountBalance />,
+  'audit-trail': <MdGavel />,
 };
 
 const agencyGroups = [
@@ -50,6 +51,8 @@ const agencyGroups = [
   { title: 'Insurance Companies', key: 'insurance', path: '/insurance', tier: 4 },
   // Tier 5
   { title: 'Retail & E-Commerce', key: 'retail', path: '/retail', tier: 5 },
+  // Tier 6
+  { title: 'Audit Trail', key: 'audit-trail', path: '/audit-trail', tier: 6 },
 ];
 
 // Map roles to sidebar keys they can see
@@ -66,6 +69,7 @@ const roleToKeys: Record<string, string[]> = {
   ROLE_EDUCATION: ['education'],
   ROLE_RETAIL: ['retail'],
   ROLE_INSURANCE: ['insurance'],
+  ROLE_AUDIT: ['audit-trail'],
 };
 
 const tierLabels: Record<number, string> = {
@@ -74,6 +78,7 @@ const tierLabels: Record<number, string> = {
   3: 'Tier 3 — Org',
   4: 'Tier 4 — Financial',
   5: 'Tier 5 — Limited',
+  6: 'Admin',
 };
 
 export const Sidebar: React.FC = () => {
